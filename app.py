@@ -1,3 +1,4 @@
+import os
 import PyPDF2
 from groq import Groq
 from sklearn.metrics.pairwise import cosine_similarity
@@ -76,31 +77,45 @@ def fetch_rag_answer(user_query, pdf_text, client):
 
 # Step 5: Streamlit Application
 def main():
-    st.title("PDF Question Answering System")
-    st.subheader("Ask your question based on the fixed PDF")
-
-    # User input query
-    user_query = st.text_input("Enter your question:")
+    st.title("RagR")
+    st.subheader("Solve Queries within minutes - FAISS and CASSANDRA DB")
     
-    if user_query:
-        st.write("Processing your query...")
+    # Password authentication
+    password_placeholder = st.empty()
+    password_input = password_placeholder.text_input("Enter the application password:", type="password")
+    correct_password = ["flurry", "nandu", "pkmkb", "ekshake", "advyth", "nithilesh"]
+
+    if password_input in correct_password:
+        # Clear the password input
+        password_placeholder.empty()
         
-        # Path to the fixed PDF file
-        pdf_path = "example.pdf"
+        st.success("Access Granted!")
         
-        # Extract PDF text
-        pdf_text = extract_text_from_pdf(pdf_path)
+        # User input query
+        user_query = st.text_input("Enter your question:")
         
-        groq_api_key = "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"
-        client = Groq(api_key=groq_api_key)
-        
-        # Fetch RAG answer
-        try:
-            answer = fetch_rag_answer(user_query, pdf_text, client)
-            st.subheader("Answer:")
-            st.write(answer)
-        except Exception as e:
-            st.error(f"An error occurred: {e}")
+        if user_query:
+            st.write("Processing your query...")
+            
+            # Path to the fixed PDF file
+            pdf_path = "example.pdf"
+            
+            # Extract PDF text
+            pdf_text = extract_text_from_pdf(pdf_path)
+            
+            # Initialize Groq AI client
+            groq_api_key = "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"  # Replace with your actual API key
+            client = Groq(api_key=groq_api_key)
+            
+            # Fetch RAG answer
+            try:
+                answer = fetch_rag_answer(user_query, pdf_text, client)
+                st.subheader("Answer:")
+                st.write(answer)
+            except Exception as e:
+                st.error(f"An error occurred: {e}")
+    elif password_input:
+        st.error("Incorrect password. Please try again.")
 
 if __name__ == "__main__":
     main()
